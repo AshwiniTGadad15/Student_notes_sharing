@@ -1,0 +1,12 @@
+{
+  "name": "rostar-notes-hub",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build:frontend": "cd frontend && npm ci && npm run build",
+    "install:backend": "cd backend && npm ci",
+    "build:all": "npm run build:frontend && npm run install:backend",
+    "start:backend": "cd backend && npm start",
+    "serve:single": "npm run build:all && npm run start:backend"
+  }
+}
