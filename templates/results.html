@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results — NoteFinder</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+
+<h1>🔎 Search Results</h1>
+
+<a href="/" class="back-btn">⬅ Back to Search</a>
+
+{% if results %}
+    <div class="results-list">
+        {% for note in results %}
+        <div class="result-card">
+            <h3>{{ note.title }}</h3>
+            <a href="{{ note.link }}" target="_blank">📥 Open Notes</a>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="no-results">❌ No notes found. Try another topic.</p>
+{% endif %}
+
+</div>
+
+</body>
+</html>

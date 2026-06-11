@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top left, rgba(59,130,246,0.16), transparent 25%),
+    radial-gradient(circle at top right, rgba(59,130,246,0.12), transparent 22%),
+    linear-gradient(180deg, #020617 0%, #020617 55%, #0f172a 100%);
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply bg-slate-900/95 border border-slate-800/80 rounded-3xl shadow-2xl shadow-slate-950/40 transition-all duration-300 p-6;
+  }
+
+  .glass-card {
+    @apply bg-slate-950/85 border border-slate-700/80 backdrop-blur-xl rounded-[28px] shadow-2xl shadow-slate-950/30;
+  }
+
+  .input-field {
+    @apply w-full rounded-2xl border border-slate-700/80 bg-slate-950/90 px-4 py-3 text-slate-100 placeholder-slate-500 outline-none transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 px-7 py-3 text-sm font-semibold text-white shadow-xl shadow-sky-500/30 transition duration-300 hover:scale-[1.01] hover:shadow-sky-500/40;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full bg-slate-800 px-7 py-3 text-sm font-semibold text-slate-100 border border-slate-700 transition duration-300 hover:bg-slate-700;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-full border border-sky-500 px-6 py-3 text-sm font-semibold text-sky-300 transition duration-300 hover:bg-slate-950 hover:text-white;
+  }
+
+  .section-title {
+    @apply text-4xl font-bold text-white tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply max-w-2xl text-slate-300;
+  }
+}
