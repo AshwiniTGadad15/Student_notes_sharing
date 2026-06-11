@@ -7,6 +7,9 @@ import dotenv from 'dotenv';
 import { connectDatabase } from './config/database.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -38,6 +41,23 @@ app.use(generalLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Serve frontend static files when available (single Render service)
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const frontendDist = path.join(__dirname, '../../frontend/dist');
+
+  if (fs.existsSync(frontendDist)) {
+    app.use(express.static(frontendDist));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(frontendDist, 'index.html'));
+    });
+  }
+} catch (err) {
+  // If anything goes wrong while resolving paths, continue without serving static files
+  console.warn('Frontend static serving disabled:', err.message);
+}
 
 // Health check
 app.get('/api/health', (req, res) => {
