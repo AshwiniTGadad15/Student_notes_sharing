@@ -20,6 +20,13 @@ dotenv.config();
 
 const app = express();
 
+// When running behind a proxy (Render, Vercel), enable trust proxy so
+// express-rate-limit and other middleware can correctly read client IPs.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+  console.log('Express trust proxy enabled');
+}
+
 // Connect to database
 connectDatabase();
 
@@ -27,8 +34,23 @@ connectDatabase();
 app.use(helmet());
 app.use(compression());
 app.use(morgan('dev'));
+const configuredFrontend = process.env.FRONTEND_URL || 'https://student-notes-sharing-hrhi9xose-ashwinitgadad15s-projects.vercel.app';
+console.log('Configured FRONTEND_URL:', configuredFrontend);
+
+const allowedOrigins = [
+  configuredFrontend,
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    console.warn('Blocked CORS origin:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -46,11 +68,11 @@ app.use('/api/admin', adminRoutes);
 try {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const frontendDist = path.join(__dirname, '../../frontend/dist');
+  const frontendDist = path.resolve(__dirname, '../../frontend/dist');
 
   if (fs.existsSync(frontendDist)) {
     app.use(express.static(frontendDist));
-    app.get('*', (req, res) => {
+    app.get(/^\/(?!api).*/, (req, res) => {
       res.sendFile(path.join(frontendDist, 'index.html'));
     });
   }

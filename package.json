@@ -3,6 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
+    "build": "npm run build:all",
     "build:frontend": "cd frontend && npm ci && npm run build",
     "install:backend": "cd backend && npm ci",
     "build:all": "npm run build:frontend && npm run install:backend",

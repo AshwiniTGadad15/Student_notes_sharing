@@ -3,8 +3,14 @@ import { generateToken, registerUser, loginUser, updateUserProfile } from '../se
 import { sendWelcomeEmail } from '../services/emailService.js';
 import { createNotification } from '../services/notificationService.js';
 import User from '../models/User.js';
+import mongoose from 'mongoose';
 
 export const register = asyncHandler(async (req, res) => {
+  // If MongoDB is not connected, return a clear 503 so frontend can surface it
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ success: false, message: 'Database not connected' });
+  }
+
   const user = await registerUser(req.body);
 
   // Send welcome email

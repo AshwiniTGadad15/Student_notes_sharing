@@ -39,7 +39,10 @@
    - **Name**: rostar-notes-hub-api
    - **Runtime**: Node
    - **Build Command**: `npm install`
-   - **Start Command**: `node src/server.js`
+     - This runs the root package install and the root `postinstall` script.
+     - The `postinstall` script installs backend dependencies from `backend/package.json`.
+   - **Start Command**: `npm run start:backend`
+     - This changes into `backend` and starts `node src/server.js` there.
 
 ### Step 3: Set Environment Variables
 
