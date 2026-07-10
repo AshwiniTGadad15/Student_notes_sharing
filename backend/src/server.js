@@ -27,14 +27,11 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Express trust proxy enabled');
 }
 
-// Connect to database
-connectDatabase();
-
 // Middleware
 app.use(helmet());
 app.use(compression());
 app.use(morgan('dev'));
-const configuredFrontend = process.env.FRONTEND_URL || 'https://student-notes-sharing-hrhi9xose-ashwinitgadad15s-projects.vercel.app';
+const configuredFrontend = process.env.FRONTEND_URL || 'https://student-notes-sharing-1.onrender.com';
 console.log('Configured FRONTEND_URL:', configuredFrontend);
 
 const allowedOrigins = [
@@ -86,6 +83,23 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running' });
 });
 
+const startServer = async () => {
+  try {
+    await connectDatabase();
+    const PORT = process.env.PORT || 5000;
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
@@ -93,12 +107,5 @@ app.use((req, res) => {
 
 // Error handling middleware
 app.use(errorHandler);
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
 
 export default app;
