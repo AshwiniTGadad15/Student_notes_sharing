@@ -66,11 +66,27 @@ try {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+  const indexFile = path.join(frontendDist, 'index.html');
 
-  if (fs.existsSync(frontendDist)) {
+  if (fs.existsSync(frontendDist) && fs.existsSync(indexFile)) {
     app.use(express.static(frontendDist));
+    app.get('/', (req, res) => {
+      res.sendFile(indexFile);
+    });
     app.get(/^\/(?!api).*/, (req, res) => {
-      res.sendFile(path.join(frontendDist, 'index.html'));
+      res.sendFile(indexFile);
+    });
+  } else {
+    app.get('/', (req, res) => {
+      res.type('html').send(`<!DOCTYPE html>
+        <html>
+          <head><title>Rostar Notes Hub</title></head>
+          <body>
+            <h1>Rostar Notes Hub API is running</h1>
+            <p>Frontend build is not available yet. Deploy the frontend build or use the API endpoints.</p>
+            <p>Health check: <a href="/api/health">/api/health</a></p>
+          </body>
+        </html>`);
     });
   }
 } catch (err) {

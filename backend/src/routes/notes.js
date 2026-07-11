@@ -3,6 +3,7 @@ import {
   uploadNote,
   getNoteById,
   searchNotesEndpoint,
+  getRecommendationsEndpoint,
   downloadNote,
   bookmarkNote,
   rateNote,
@@ -18,6 +19,7 @@ const router = express.Router();
 
 router.post('/upload', authenticate, uploadLimiter, upload.single('file'), validateCreateNote, validateRequest, uploadNote);
 router.get('/search', validateSearch, validateRequest, searchLimiter, searchNotesEndpoint);
+router.get('/recommendations', authenticate, searchLimiter, getRecommendationsEndpoint);
 router.get('/user/notes/approved', authenticate, getApprovedNotes);
 router.get('/:id', validateObjectId, validateRequest, getNoteById);
 router.get('/:id/download', authenticate, validateObjectId, validateRequest, downloadNote);

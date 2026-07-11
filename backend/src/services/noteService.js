@@ -1,5 +1,32 @@
+import axios from 'axios';
 import Note from '../models/Note.js';
 import Category from '../models/Category.js';
+
+export const buildRecommendationQuery = (profile = {}, query = '') => {
+  const terms = [];
+
+  if (profile?.university) {
+    terms.push(profile.university);
+  }
+  if (profile?.branch) {
+    terms.push(profile.branch);
+  }
+  if (profile?.semester) {
+    terms.push(`semester ${profile.semester}`);
+  }
+  if (query) {
+    terms.push(query);
+  }
+
+  return {
+    query: terms.filter(Boolean).join(' '),
+    filters: {
+      university: profile?.university || undefined,
+      branch: profile?.branch || undefined,
+      semester: profile?.semester || undefined,
+    },
+  };
+};
 
 export const searchNotes = async (query, filters = {}, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
@@ -59,6 +86,45 @@ export const searchNotes = async (query, filters = {}, page = 1, limit = 10) => 
     total,
     pages: Math.ceil(total / limit),
     currentPage: page,
+  };
+};
+
+export const getPersonalizedRecommendations = async (userProfile = {}, query = '', page = 1, limit = 10) => {
+  const { query: recommendationQuery, filters } = buildRecommendationQuery(userProfile, query);
+  const localResult = await searchNotes(recommendationQuery, { ...filters, sortBy: 'recent' }, page, limit);
+
+  let externalResults = [];
+  const hasWebSearchConfig = Boolean(process.env.SEARCH_API_KEY && process.env.SEARCH_ENGINE_ID);
+
+  if (hasWebSearchConfig) {
+    try {
+      const response = await axios.get('https://www.googleapis.com/customsearch/v1', {
+        params: {
+          key: process.env.SEARCH_API_KEY,
+          cx: process.env.SEARCH_ENGINE_ID,
+          q: recommendationQuery,
+          num: 5,
+        },
+        timeout: 10000,
+      });
+
+      externalResults = (response.data.items || []).map((item) => ({
+        title: item.title,
+        url: item.link,
+        snippet: item.snippet,
+        source: 'web',
+      }));
+    } catch (error) {
+      console.error('External note search failed:', error.message);
+    }
+  }
+
+  return {
+    ...localResult,
+    notes: localResult.notes,
+    externalResults,
+    usedExternalSearch: hasWebSearchConfig,
+    searchQuery: recommendationQuery,
   };
 };
 

@@ -2,6 +2,13 @@ export const errorHandler = (err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || 'Internal Server Error';
 
+  if (err.status) {
+    return res.status(err.status).json({
+      status: err.status,
+      message,
+    });
+  }
+
   // Validation errors
   if (err.name === 'ValidationError') {
     return res.status(400).json({

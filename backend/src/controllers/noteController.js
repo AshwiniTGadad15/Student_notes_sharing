@@ -6,7 +6,7 @@ import Bookmark from '../models/Bookmark.js';
 import Rating from '../models/Rating.js';
 import User from '../models/User.js';
 import { uploadToCloudinary, deleteFromCloudinary, getFileExtension } from '../utils/fileUpload.js';
-import { searchNotes, getNotesForAdmin, approveNote, rejectNote, getUserNotes } from '../services/noteService.js';
+import { searchNotes, getPersonalizedRecommendations, getNotesForAdmin, approveNote, rejectNote, getUserNotes } from '../services/noteService.js';
 import { sendNoteApprovedEmail, sendNoteRejectedEmail, sendRatingNotificationEmail } from '../services/emailService.js';
 import { createNotification } from '../services/notificationService.js';
 
@@ -96,6 +96,27 @@ export const searchNotesEndpoint = asyncHandler(async (req, res) => {
   };
 
   const result = await searchNotes(q, filters, parseInt(page), parseInt(limit));
+
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+});
+
+export const getRecommendationsEndpoint = asyncHandler(async (req, res) => {
+  const { q, page = 1, limit = 10 } = req.query;
+  const user = await User.findById(req.user.userId).select('university branch semester firstName lastName');
+
+  const result = await getPersonalizedRecommendations(
+    {
+      university: user?.university,
+      branch: user?.branch,
+      semester: user?.semester,
+    },
+    q,
+    parseInt(page),
+    parseInt(limit)
+  );
 
   res.status(200).json({
     success: true,

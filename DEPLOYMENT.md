@@ -8,6 +8,8 @@
 - [ ] Code pushed to GitHub
 - [ ] Backend on Render
 - [ ] Frontend on Vercel
+- [ ] Email SMTP configured
+- [ ] External note search API configured
 - [ ] SSL certificates configured
 - [ ] Domain name configured
 - [ ] Analytics setup
@@ -68,6 +70,8 @@ NODE_ENV=production
 FRONTEND_URL=https://your_frontend_domain.vercel.app
 ADMIN_EMAIL=admin@your_domain.com
 ADMIN_PASSWORD=secure_admin_password
+SEARCH_API_KEY=your_google_custom_search_api_key
+SEARCH_ENGINE_ID=your_google_custom_search_engine_id
 ```
 
 ### Step 4: Deploy
